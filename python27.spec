@@ -13,11 +13,12 @@
 Summary: Package that installs %scl
 Name: %scl_name
 Version: 1.1
-Release: 21%{?dist}
+Release: 22%{?dist}
 License: GPLv2+
 Source0: macros.additional.%{scl}
 Source1: README
 Source2: LICENSE
+Source3: pythondeps-scl-27.sh
 BuildRequires: help2man
 # workaround for https://bugzilla.redhat.com/show_bug.cgi?id=857354
 BuildRequires: iso-codes
@@ -114,6 +115,9 @@ cat >> %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel << E
 %%scl_prefix_%{scl_name_base} %{scl_prefix}
 EOF
 
+mkdir -p %{buildroot}%{_root_prefix}/lib/rpm
+cp -a %{SOURCE3} %{buildroot}%{_root_prefix}/lib/rpm
+
 # install generated man page
 mkdir -p %{buildroot}%{_mandir}/man7/
 install -m 644 %{scl_name}.7 %{buildroot}%{_mandir}/man7/%{scl_name}.7
@@ -127,11 +131,15 @@ install -m 644 %{scl_name}.7 %{buildroot}%{_mandir}/man7/%{scl_name}.7
 
 %files build
 %{_root_sysconfdir}/rpm/macros.%{scl}-config
+%{_root_prefix}/lib/rpm/pythondeps-scl-27.sh
 
 %files scldevel
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
 %changelog
+* Wed Feb 17 2016 Michal Cyprian <mcyprian@redhat.com> - 1.1-22
+- Add script pythondeps-scl-27.sh to manage provides and requires
+
 * Tue Feb 16 2016 Charalampos Stratakis <cstratak@redhat.com> - 1.1-21
 - Properly define XDG_DATA_DIRS variable to avoid breaking applications (rhbz#1266529)
 - Escape apostrophs in metapackage manual page(rhbz#1219527)
