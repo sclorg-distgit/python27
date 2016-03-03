@@ -13,7 +13,7 @@
 Summary: Package that installs %scl
 Name: %scl_name
 Version: 1.1
-Release: 22%{?dist}
+Release: 23%{?dist}
 License: GPLv2+
 Source0: macros.additional.%{scl}
 Source1: README
@@ -108,6 +108,7 @@ EOF
 # Add the aditional macros to macros.%%{scl}-config
 cat %{SOURCE0} >> %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl}-config
 sed -i 's|@scl@|%{scl}|g' %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl}-config
+sed -i 's|@vendorscl@|%{scl}|g' %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl}-config
 
 # Create the scldevel subpackage macros
 cat >> %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel << EOF
@@ -137,6 +138,9 @@ install -m 644 %{scl_name}.7 %{buildroot}%{_mandir}/man7/%{scl_name}.7
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
 %changelog
+* Wed Feb 17 2016 Robert Kuska <rkuska@redhat.com> - 1.1-23
+- Insert proper value into requires/provides macros
+
 * Wed Feb 17 2016 Michal Cyprian <mcyprian@redhat.com> - 1.1-22
 - Add script pythondeps-scl-27.sh to manage provides and requires
 
