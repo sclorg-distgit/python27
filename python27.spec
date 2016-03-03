@@ -13,7 +13,7 @@
 Summary: Package that installs %scl
 Name: %scl_name
 Version: 1.1
-Release: 17%{?dist}
+Release: 18%{?dist}
 License: GPLv2+
 Source0: macros.additional.%{scl}
 Source1: README
@@ -82,6 +82,12 @@ chmod a+x h2m_helper
 
 # generate the man page
 help2man -N --section 7 ./h2m_helper -o %{scl_name}.7
+# Fix single quotes in man page. See RHBZ#1219527
+#
+# http://lists.gnu.org/archive/html/groff/2008-06/msg00001.html suggests that
+# using "'" for quotes is correct, but the current implementation of man in 6
+# mangles it when rendering.
+sed -i "s/'/\\\\(aq/g" %{scl_name}.7
 
 %install
 rm -rf %{buildroot}
@@ -92,7 +98,7 @@ export PATH=%{_bindir}\${PATH:+:\${PATH}}
 export LD_LIBRARY_PATH=%{_libdir}\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}
 export MANPATH=%{_mandir}:\${MANPATH}
 # For systemtap
-export XDG_DATA_DIRS=%{_datadir}\${XDG_DATA_DIRS:+:\${XDG_DATA_DIRS}}
+export XDG_DATA_DIRS=%{_datadir}\${XDG_DATA_DIRS:-/usr/local/share:/usr/share}}
 # For pkg-config
 export PKG_CONFIG_PATH=%{_libdir}/pkgconfig\${PKG_CONFIG_PATH:+:\${PKG_CONFIG_PATH}}
 EOF
@@ -126,6 +132,10 @@ install -m 644 %{scl_name}.7 %{buildroot}%{_mandir}/man7/%{scl_name}.7
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
 %changelog
+* Tue Feb 16 2016 Charalampos Stratakis <cstratak@redhat.com> - 1.1-18
+- Properly define XDG_DATA_DIRS variable to avoid breaking applications (rhbz#1266529)
+- Escape apostrophs in metapackage manual page(rhbz#1219527)
+
 * Tue Jan 20 2015 Slavek Kabrda <bkabrda@redhat.com> - 1.1-17
 - Require python-pip and python-wheel (note: in rh-python34
   this is not necessary, because "python" depends on these).
