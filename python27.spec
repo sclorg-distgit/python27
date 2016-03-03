@@ -13,11 +13,12 @@
 Summary: Package that installs %scl
 Name: %scl_name
 Version: 1.1
-Release: 18%{?dist}
+Release: 23%{?dist}
 License: GPLv2+
 Source0: macros.additional.%{scl}
 Source1: README
 Source2: LICENSE
+Source3: pythondeps-scl-27.sh
 BuildRequires: help2man
 # workaround for https://bugzilla.redhat.com/show_bug.cgi?id=857354
 BuildRequires: iso-codes
@@ -107,6 +108,7 @@ EOF
 # Add the aditional macros to macros.%%{scl}-config
 cat %{SOURCE0} >> %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl}-config
 sed -i 's|@scl@|%{scl}|g' %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl}-config
+sed -i 's|@vendorscl@|%{scl}|g' %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl}-config
 
 # Create the scldevel subpackage macros
 cat >> %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel << EOF
@@ -114,55 +116,74 @@ cat >> %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel << E
 %%scl_prefix_%{scl_name_base} %{scl_prefix}
 EOF
 
+mkdir -p %{buildroot}%{_root_prefix}/lib/rpm
+cp -a %{SOURCE3} %{buildroot}%{_root_prefix}/lib/rpm
+
 # install generated man page
 mkdir -p %{buildroot}%{_mandir}/man7/
 install -m 644 %{scl_name}.7 %{buildroot}%{_mandir}/man7/%{scl_name}.7
 
 %files
 
-%files runtime
+%files runtime -f filesystem
 %doc README LICENSE
 %scl_files
 %{_mandir}/man7/%{scl_name}.*
 
 %files build
 %{_root_sysconfdir}/rpm/macros.%{scl}-config
+%{_root_prefix}/lib/rpm/pythondeps-scl-27.sh
 
 %files scldevel
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
 %changelog
-* Tue Feb 16 2016 Charalampos Stratakis <cstratak@redhat.com> - 1.1-18
+* Wed Feb 17 2016 Robert Kuska <rkuska@redhat.com> - 1.1-23
+- Insert proper value into requires/provides macros
+
+* Wed Feb 17 2016 Michal Cyprian <mcyprian@redhat.com> - 1.1-22
+- Add script pythondeps-scl-27.sh to manage provides and requires
+
+* Tue Feb 16 2016 Charalampos Stratakis <cstratak@redhat.com> - 1.1-21
 - Properly define XDG_DATA_DIRS variable to avoid breaking applications (rhbz#1266529)
 - Escape apostrophs in metapackage manual page(rhbz#1219527)
 
-* Tue Jan 20 2015 Slavek Kabrda <bkabrda@redhat.com> - 1.1-17
+* Tue Jan 20 2015 Slavek Kabrda <bkabrda@redhat.com> - 1.1-20
 - Require python-pip and python-wheel (note: in rh-python34
   this is not necessary, because "python" depends on these).
 
-* Mon Mar 31 2014 Honza Horak <hhorak@redhat.com> - 1.1-16
+* Mon Mar 31 2014 Honza Horak <hhorak@redhat.com> - 1.1-19
 - Fix path typo in README
   Related: #1061457
 
-* Mon Feb 17 2014 Bohuslav Kabrda <bkabrda@redhat.com> - 1-15
+* Thu Mar 20 2014 Bohuslav Kabrda <bkabrda@redhat.com> - 1.1-18
+- Use "-f filesystem for files section of -runtime on RHEL 7.
+Resolves: rhbz#1076159
+
+* Mon Feb 17 2014 Bohuslav Kabrda <bkabrda@redhat.com> - 1-17
 - Introduce README and LICENSE.
 - Change version to 1.1.
 Resolves: rhbz#1061457
 
-* Wed Jan 22 2014 Bohuslav Kabrda <bkabrda@redhat.com> - 1-14
+* Wed Jan 22 2014 Bohuslav Kabrda <bkabrda@redhat.com> - 1-16
 - Add scldevel subpackage.
 Resolves: rhbz#1056414
 
-* Mon Jan 20 2014 Tomas Radej <tradej@redhat.com> - 1-13
+* Mon Jan 20 2014 Tomas Radej <tradej@redhat.com> - 1-15
 - Rebuilt with fixed scl-utils
 Resolves: rhbz#1054733
 
-* Mon Nov 25 2013 Robert Kuska <rkuska@redhat.com> - 1-12
+* Mon Nov 25 2013 Robert Kuska <rkuska@redhat.com> - 1-14
 - Add unversioned python macros for building depending packages
 
-* Mon Sep 30 2013 Bohuslav Kabrda <bkabrda@redhat.com> - 1-11
-- Make building depending collections on top of python27 easier.
-Resolves: rhbz#1019238
+* Wed Oct 23 2013 Robert Kuska <rkuska@redhat.com> - 1-13
+- Remove blank line from macros.additional.python27
+
+* Fri Oct 18 2013 Robert Kuska <rkuska@redhat.com> - 1-12
+- Add aditional macros for building depending collections
+
+* Thu Oct 17 2013 Robert Kuska <rkuska@redhat.com> - 1-11
+- Add setup macro after running into rhbz#998524 while rhel-7 build
 
 * Mon May 27 2013 Matej Stuchlik <mstuchli@redhat.com> - 1-10
 - BZ966391: Another MANPATH fix.
