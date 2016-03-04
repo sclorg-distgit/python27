@@ -1,5 +1,5 @@
 # override __os_install_post for this collection
-# the python27_os_install_post macro is defined in macros.python2.python27 in python27-python-devel
+# the @scl@* macros are defined in macros.python2.python27 in python27-python-devel
 # the name is intentionally hardcoded to always provide the same name
 %@scl@_python_provides /usr/lib/rpm/pythondeps-scl-27.sh --provides %{?scl:@vendorscl@-}
 %@scl@_python_requires /usr/lib/rpm/pythondeps-scl-27.sh --requires %{?scl:@vendorscl@-}
