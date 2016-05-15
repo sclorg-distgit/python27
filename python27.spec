@@ -13,7 +13,7 @@
 Summary: Package that installs %scl
 Name: %scl_name
 Version: 1.1
-Release: 24%{?dist}
+Release: 25%{?dist}
 License: GPLv2+
 Source0: macros.additional.%{scl}
 Source1: README
@@ -99,7 +99,7 @@ export PATH=%{_bindir}\${PATH:+:\${PATH}}
 export LD_LIBRARY_PATH=%{_libdir}\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}
 export MANPATH=%{_mandir}:\${MANPATH}
 # For systemtap
-export XDG_DATA_DIRS=%{_datadir}\${XDG_DATA_DIRS:-/usr/local/share:/usr/share}
+export XDG_DATA_DIRS=%{_datadir}:\${XDG_DATA_DIRS:-/usr/local/share:/usr/share}
 # For pkg-config
 export PKG_CONFIG_PATH=%{_libdir}/pkgconfig\${PKG_CONFIG_PATH:+:\${PKG_CONFIG_PATH}}
 EOF
@@ -138,6 +138,9 @@ install -m 644 %{scl_name}.7 %{buildroot}%{_mandir}/man7/%{scl_name}.7
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
 %changelog
+* Wed Apr 20 2016 Charalampos Stratakis <cstratak@redhat.com> - 1.1-25
+- Properly seperate paths for XDG_DATA_DIRS variable (rhbz#1266529)
+
 * Fri Apr 15 2016 Charalampos Stratakis <cstratak@redhat.com> - 1.1-24
 - Fix SPEC file syntax error for XDG_DATA_DIRS variable definition (rhbz#1266529)
 
